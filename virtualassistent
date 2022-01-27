@@ -1,0 +1,75 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+import wikipedia
+import pyjokes
+
+
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+
+#voices = engine.getProperty('voices')
+#engine.setProperty('voice',voices[1].id)
+
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+    #engine.say('I am your personal virtual assistant')
+    #engine.say('What can I do for you')
+    #engine.runAndWait()
+
+def take_command():
+    try:
+        with sr.Microphone() as source:
+            print('listening...')
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            if 'Maxi' in command:
+                command = command.replace('Maxi', '')
+                print(command)
+    except:
+       pass
+    return command
+
+def run_Maxi():
+    command = take_command()
+    print(command)
+    if 'play' in command:
+        song = command.replace('play', '')
+        talk('Okey Sir playing ' + song)
+        pywhatkit.playonyt(song)
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        print(time)
+        talk('The current time is' + time)
+    elif 'tell me more info about' in command: 
+        person = command.replace('tell me more info about', '')
+        info = wikipedia.summary(person, 1)
+        print(info)
+        talk('I found this details for you sir' + info)
+    elif'date' in command:
+        talk('sorry, I have a headache')
+    elif ' are you alone' in command:
+        talk('I am in a relationship with wifi')
+    elif'joke' in command:
+        talk(pyjokes.get_joke())
+    elif'hear' in command:
+        talk('Yes I hear you Sir')
+    elif'how are you' in command:
+        talk('I feel great too thanks, how are you sir')
+    elif 'happy' in command:
+        talk('I am very happy to hear that sir')
+    elif 'help' in command:
+        talk('Yes sir i can help you')
+    elif 'wait' in command:
+        talk('Okey sir i can wait for you')
+    elif 'love you' in command:
+        talk('I love you too sir')
+    else:
+        talk('Please say the command again')
+
+while True:
+    run_Maxi()
