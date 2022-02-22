@@ -12,9 +12,8 @@ import java.util.Scanner;
 
 
 public class App {
+    System.out.println("0315 feladat")
 	
-int aoldal = scan.nextInt();
-
 system.out.print("aoldal:"));
 int aoldal = scan.nextInt();
 
