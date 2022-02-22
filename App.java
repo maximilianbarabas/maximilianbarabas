@@ -13,26 +13,28 @@ import java.util.Scanner;
 
 public class App {
 	
-	public static void main (String[] args) {
-		System.out.println("Barabas Maximilian, 2022-02-16");
-        System.out.println("Feladat felhasználás büntetést von maga után");
-        System.out.println("Lépések commitolva vannak");
+int aoldal = scan.nextInt();
 
-		Scanner sc = new Scanner(System.in);
-		
-		System.out.print("Szam1: ");
-		int szam1 = sc.nextInt();
-		System.out.print("Szam2: ");
-		int szam2 = sc.nextInt();
-    
-		
-		if(szam1>szam2) {
-			System.out.println("Az elso szam nagyobb");
-		} else if (szam1<szam2) {
-			System.out.println("A masodik szam nagyobb");
-		}
-	}
-}
+system.out.print("aoldal:"));
+int aoldal = scan.nextInt();
+
+
+system.out.print("boldal:"));
+int boldal = scan.nextInt();
+
+
+system.out.print("coldal:"));
+int coldal = scan.nextInt();
+
+
+system.out.print("doldal:"));
+int doldal = scan.nextInt();
+
+double terület =((Aoldal) + boldal) /4* (aoldal -coldal)
+* Mathsqrt((aoldal+boldal-coldal+doldal)*aoldal-boldal-coldal+doldal)
+(aoldal+boldal-coldal-doldal)*(-aoldal+boldal+coldal+doldal));
+System.out.println('A trapéz 3 oldal:' + terület)
+
 
 
 
