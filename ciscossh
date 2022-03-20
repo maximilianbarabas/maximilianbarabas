@@ -1,0 +1,20 @@
+Csatlakozzon az ISP_Admin PC-ről SSH-val az ISP szerverre (70.0.0.1, Jozsi, CsakALinux) és készítse el az ISP előfizetőinek DHCP készletét.
+
+A készlet neve legyen Users, a hálózat 194.41.10.0/24, alapértelmezett átjáró: 194.41.10.1, DNS:70.0.0.10, domain: isp.hu. Zárja ki az osztásból az első 100 Ip címet.
+
+
+Password: 
+ISP#en
+ISP#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ISP(config)#ip dhcp excluded-address 194.41.10.1 194.41.10.100
+ISP(config)#ip dhcp excluded-address 194.41.10.1 194.41.10.100
+ISP(config)#ip dhcp pool Users
+ISP(dhcp-config)#network 194.41.10.0 255.255.255.0
+ISP(dhcp-config)#default-router 194.41.10.1
+ISP(dhcp-config)#dns-server 70.0.0.10
+ISP(dhcp-config)#domain-name isp.hu
+ISP(dhcp-config)#do w
+ISP(dhcp-config)#exit
+ISP(config)#
+ISP#
