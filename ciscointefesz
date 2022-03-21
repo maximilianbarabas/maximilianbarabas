@@ -1,0 +1,68 @@
+# Ceg forgalomirányító Gig0/1-es interfészére állítsa be a 193.41.10.2/30-as IP címet.
+
+Router>en
+Router#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#int g0/1
+Router(config-if)#ip address 193.41.10.2 255.255.255.252
+Router(config-if)#no shut
+
+# Konfiguráljon alapértelmezett utat a felhő felé a 193.41.10.1-es IP címet megadva cél címként.
+
+Router(config-if)#ip route 0.0.0.0 0.0.0.0 193.41.10.1
+
+# Ceg forgalomirányító Gig0/0-s interfészét csatlakoztassa a CegSw1 kapcsoló Gig0/1-es interfészhez, 
+és hozzon létre három alinterfészt 802.1Q beágyazással Gig0/0.10-es 192.168.10.1/24, Gig0/0.20-as 192.168.20.1/24 és a Gig0/0.30-as 192.168.30.1/24 IP cím beállítással.
+
+1.(Összekötés) 
+Router(config)#int g0/0
+Router(config-if)#no shut
+
+Router(config-if)#int g0/0.10
+Router(config-subif)#encapsulation dot1Q 10
+Router(config-subif)#ip address 192.168.10.1 255.255.255.0
+
+Router(config)#int g0/0.20
+Router(config-subif)#encapsulation dot1Q 20
+Router(config-subif)#ip address 192.168.20.1 255.255.255.0
+
+Router(config-subif)#int g0/0.30
+Router(config-subif)#encapsulation dot1Q 30
+Router(config-subif)#ip address 192.168.30.1 255.255.255.0
+Router(config-subif)#do w
+
+
+# Készítsen három DHCP készletet a belső hálózat számára, Iroda – 192.168.10.0/24, Informatika – 192.168.20.0/24 és Wifi – 192.168.30.0/24. DNS szerver 70.0.0.10, 
+domain név ceg.hu. A .10 és a .20 hálózatból zárja ki az első 50 Ip címet, a .30-as hálózatból csak a hálózat alapértelmezett átjáróját.
+
+Router(config-subif)#ip dhcp excluded-address 192.168.10.1 192.168.10.50
+Router(config)#ip dhcp pool Iroda
+Router(dhcp-config)#network 192.168.10.0 255.255.255.0  (network mindgig 0 végjelű)
+Router(dhcp-config)#dns-server 70.0.0.10
+Router(dhcp-config)#domain-name ceg.hu
+Router(dhcp-config)#default-router 192.168.10.1
+
+Router(config)#ip dhcp excluded-address 192.168.20.1 192.168.20.50
+Router(config)#ip dhcp pool Informatika
+Router(dhcp-config)#network 192.168.20.0 255.255.255.0
+Router(dhcp-config)#dns-server 70.0.0.10
+Router(dhcp-config)#domain-name ceg.hu
+Router(dhcp-config)#default-router 192.168.20.1
+Router(dhcp-config)#exit
+Router(config)#do w
+
+# Készítsen listás NAT szolgáltatást a belső hálózatnak, publikus IP címként használja a Gig0/1-es interfészre beállított IP címet.
+
+Router(config)#int g0/1
+Router(config-if)#ip nat outside
+
+Router(config-if)#int g0/0.10
+Router(config-subif)#ip nat inside
+
+Router(config-subif)#int g0/0.20
+Router(config-subif)#ip nat inside
+
+Router(config-subif)#int g0/0.30
+Router(config-subif)#ip nat inside
+
+
