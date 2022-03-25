@@ -51,6 +51,20 @@ Router(dhcp-config)#default-router 192.168.20.1
 Router(dhcp-config)#exit
 Router(config)#do w
 
+Router(config)#ip dhcp excluded-address 192.168.30.1
+Router(config)#ip dhcp pool Wifi
+Router(dhcp-config)#network 192.168.30.0 255.255.255.0
+Router(dhcp-config)#dns-server 70.0.0.10
+Router(dhcp-config)#domain-name ceg.hu
+Router(dhcp-config)#default-router 192.168.30.1
+Router(dhcp-config)#do w
+Router(dhcp-config)#exit
+do w
+
+en/conf t
+Router(config)#hostname Ceg
+
+
 # Készítsen listás NAT szolgáltatást a belső hálózatnak, publikus IP címként használja a Gig0/1-es interfészre beállított IP címet.
 
 Router(config)#int g0/1
@@ -64,5 +78,150 @@ Router(config-subif)#ip nat inside
 
 Router(config-subif)#int g0/0.30
 Router(config-subif)#ip nat inside
+
+# Vegyen fel két helyi felhasználót 15-ös jogosultsági szinttel a forgalomirányítóra, (Jozsi, CsakALinux), és saját magát tetszőleges jelszóval.
+
+Ceg(config)#ip domain-name ceg.hu
+
+# Készítsen 1024 bit-es RSA kulcsot (domain név:ceg.hu) és csak SSH-val engedélyezze a belépést az első öt virtuális terminál vonalon.
+
+Ceg(config)#crypto key generate rsa
+yes
+1024
+
+Ceg(config)#line vty 0 5
+Ceg(config-line)#login local
+Ceg(config-line)#transport input ssh
+Ceg(config-line)#do w
+
+# Csatlakoztassa a Cég hálózatában a két kapcsolót egymáshoz a Gig0/2-es porton.
+(Switcheket csatlakoztatom)
+
+# CegSw1 lesz a hálózat VTP szervere (ceg.hu, VTPtitok), hozzon létre négy Vlan-t (Vlan 10- Iroda, Vlan20 – Informatika, Vlan 30 – Wifi és Vlan 40 – NemHasznált)
+
+Switch>en
+Switch#conf t
+Switch(config)#vtp domain ceg.hu
+Switch(config)#vtp password VIPtitok
+Switch(config)#hostname CegSw1
+
+# A kapcsoló kapja meg az Informatika Vlan második IP címét.
+# Konfigurálja a privilegizált mód jelszavát „PingvinKiralysag”, és biztosítson Telnet hozzáférést az eszközhöz jelszó „LinuxAzIsten”.
+
+CegSw1(config)#enable secret PingvinKiralysag
+CegSw1(config)# line vty 0 15
+CegSw1(config-line)#password LinuxAzIsten
+CegSw1(config-line)#login 
+CegSw1(config-line)#exit
+
+# Konfigurálja a kapcsoló portjait:
+·        Gig0/1-2 – Trunk
+·        Fa0/1-10 – Vlan10 (Iroda)
+·        Fa0/11-20 – Vlan20 (Informatika)
+·        Fa0/24 – Vlan30 (Wifi)
+·        Nem használt portok – Vlan40 (NemHasznalt).
+
+CegSw1(config)#vlan 10
+CegSw1(config-vlan)#name Iroda
+CegSw1(config-vlan)#int range fa0/1-10
+CegSw1(config-if-range)#switchport mode access 
+CegSw1(config-if-range)#switchport access vlan 10
+CegSw1(config-if-range)#exit
+
+CegSw1(config)#vlan 20
+CegSw1(config-vlan)#name Informatika
+CegSw1(config-vlan)#int range fa0/11-20
+CegSw1(config-if-range)#switchport mode access
+CegSw1(config-if-range)#switchport access vlan 20
+CegSw1(config-if-range)#exit
+
+CegSw1(config)#vlan 30
+CegSw1(config-vlan)#name Wifi
+CegSw1(config-vlan)#int range fa0/24
+CegSw1(config-if-range)#switchport mode access
+CegSw1(config-if-range)#switchport access vlan 30
+CegSw1(config-if-range)#exit
+
+CegSw1(config)#vlan 40
+CegSw1(config-vlan)#name NemHasznalt
+CegSw1(config-vlan)#int range fa0/21-23
+CegSw1(config-if-range)#switchport mode access
+CegSw1(config-if-range)#switchport access vlan 40
+CegSw1(config-if-range)#exit
+
+CegSw1(config)#vlan 1
+CegSw1(config-vlan)#int range g0/1-2
+CegSw1(config-if-range)#switchport mode trunk 
+CegSw1(config-if-range)#exit
+CegSw1(config)#do w
+
+# CegSw2 VTP kliens(ceg.hu, VTPtitok), az Informatika Vlan 3. IP címét birtokolja, a privilegizált mód jelszava legyen „PingvinKiralysag”, és biztosítson Telnet hozzáférést az eszközhöz jelszó „LinuxAzIsten”.
+# Konfigurálja a kapcsoló portjait:
+·        Gig0/2 – Trunk
+·        Fa0/1-10 – Vlan10 (Iroda)
+·        Fa0/11-20 – Vlan20 (Informatika)
+·        Fa0/24 – Vlan30 (Wifi)
+·        Nem használt portok – Vlan40 (NemHasznalt).
+
+Switch>en
+Switch#conf t
+Switch(config)#hostname CegSw2
+CegSw2(config)#vtp mode client 
+CegSw2(config)#vtp domain ceg.hu
+CegSw2(config)#vtp password VIPtitok
+CegSw2(config)#int vlan 1 
+CegSw2(config-if)#ip address 192.168.20.3 255.255.255.0
+CegSw2(config-if)#no shut
+CegSw2(config-if)#exit
+CegSw2(config)#enable secret PingvinKiralysag
+CegSw2(config)#line vty 0 15
+CegSw2(config-line)#password LinuxAzIsten
+CegSw2(config-line)#login
+CegSw2(config-line)#exit
+CegSw2(config)#do w
+
+CegSw2(config)#vtp mode server
+CegSw2(config)#vlan 10
+CegSw2(config-vlan)#name Iroda
+CegSw2(config-vlan)#int range fa0/1-10
+CegSw2(config-if-range)#switchport mode access
+CegSw2(config-if-range)#switchport access vlan 10
+CegSw2(config-if-range)#exit
+
+CegSw2(config)#vlan 20
+CegSw2(config-vlan)#name Informatika
+CegSw2(config-vlan)#int range fa0/11-20
+CegSw2(config-if-range)#switchport mode access
+CegSw2(config-if-range)#switchport access vlan 20
+CegSw2(config-if-range)#exit
+
+CegSw2(config)#vlan 30
+CegSw2(config-vlan)#name Wifi
+CegSw2(config-vlan)#int range fa0/24
+CegSw2(config-if-range)#switchport mode access
+CegSw2(config-if-range)#switchport access vlan 30
+CegSw2(config-if-range)#exit
+
+CegSw2(config)#vlan 40 
+CegSw2(config-vlan)#name NemHasznalt
+CegSw2(config-vlan)#int range fa0/21-23, g0/1
+CegSw2(config-if-range)#switchport mode access
+CegSw2(config-if-range)#switchport access vlan 40
+CegSw2(config-if-range)#exit
+
+CegSw2(config)#vlan 1
+CegSw2(config-vlan)#int range g0/2
+CegSw2(config-if-range)#switchport mode trunk 
+CegSw2(config-if-range)#exit 
+
+CegSw2(config)#vtp mode client 
+CegSw2(config)#do w
+CegSw2(config)#exit
+
+
+
+
+
+
 
 
