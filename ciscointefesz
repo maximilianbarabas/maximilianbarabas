@@ -81,7 +81,11 @@ Router(config-subif)#ip nat inside
 
 # Vegyen fel két helyi felhasználót 15-ös jogosultsági szinttel a forgalomirányítóra, (Jozsi, CsakALinux), és saját magát tetszőleges jelszóval.
 
-Ceg(config)#ip domain-name ceg.hu
+hostname ceg.hu
+ceg.hu(config)#ip domain-name ceg.hu
+ceg.hu(config)#username Jozsi secret CsakALinux
+ceg.hu(config)#username Jozsi secret CsakALinux 15
+ceg.hu(config)#username Maxi secret Almafa12 15
 
 # Készítsen 1024 bit-es RSA kulcsot (domain név:ceg.hu) és csak SSH-val engedélyezze a belépést az első öt virtuális terminál vonalon.
 
