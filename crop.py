@@ -137,3 +137,67 @@ crop.which_place_wheat_min()
 crop.write_large()
 
 
+######################################################################################################################
+
+###################################
+# Barabas Maximilian 
+# SZOFT I N 
+# 2021.12.14
+##################################
+
+print("Barabas Maximilian/ Szoft I N / 2022.12.14")
+
+
+
+from typing import List
+from vegetableModel import VegetableModel
+
+class Vegetable:
+    def __init__(self):
+        self.file_name = 'zoldseg.txt'
+        self.vegetables: List[VegetableModel] = []
+        self.lines = []
+    
+    def read_content(self):
+        fp = open(self.file_name, 'r')
+        self.lines = fp.readlines()
+        fp.close()
+    
+    def convert_content(self):
+        for line in self.lines[1::]:
+            (id, name, quantity, site, price) = line.split(';')
+            vegetableModel = VegetableModel
+            (
+                id, name, str(quantity), site, str(price),
+            )
+            self.vegetables.append(vegetableModel)
+    
+    def print_all(self):
+        for vegetable in self.vegetables:
+            print(vegetable.name, vegetable.site, vegetable.weight)
+    
+    # A Szolnokon található zöldséget össz tömegét
+    def szeged_sum_wight(self):
+        darab = 0
+        for vegetable  in self.vegetables:
+            if "Szeged" in vegetable.site:
+                darab += int(vegetable.weight)
+            print("Szegedi zöldségek össztömege pontosan:", darab,"kg")
+            
+
+    # Melyik telephelyen van értékben legtöbb zöldség
+    def most_valuable_vegetables(self):
+        max_value = self.vegetables[0]
+        for vegetables in self.vegetables:
+            if vegetables.price > str(max_value.price):
+                max_value = vegetable
+        print('Ezen a telephelyen van', max_value.site)
+
+vegetable = Vegetable()
+vegetable.read_content()
+vegetable.convert_content()
+vegetable.print_all()
+vegetable.szeged_sum_wight()
+vegetable.most_valuable_vegetables()
+
+
