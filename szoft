@@ -1,0 +1,159 @@
+#Készítette: Maximilian Barabas I N 2022-06-15
+*** Settings ***
+Library    SeleniumLibrary
+*** Variables *** 
+${BROWSER}                                 chrome
+${URL}                                     https://alienregistry.azurewebsites.net/
+${WELCOMETEXT}                             xpath=//h1[contains(.,'Welcome')]        
+${WELCOME}                                 Welcome
+${ALIENS}                                  id=Aliens
+${ALIENS_NAME}                             Aliens
+${ALIENSTEXT}                              xpath=//h1[contains(.,'Index')]
+${ALIENS_ALIENS_NAME}                      Index
+${HOME}                                    id=Home
+${HOME_NAME}                               Home
+${PRIVACY}                                 id=Privacy  
+${PRIVACY_NAME}                            Privacy
+${PRIVACYTEXT}                             xpath=//h1[contains(.,'Privacy Policy')]  
+${PRIVACYTEXT_NAME}                        Privacy Policy
+${CREATENEW}                               //*[@id="CreateNew"] 
+${CREATENAME}                              //*[@id="Name"] 
+${CREATEPLANET}                            //*[@id="Planet"] 
+${CREATEPOPULATION}                        //*[@id="Population"] 
+${CREATEATTITUDE}                          //*[@id="Attitude"] 
+${CREATECREATE}                            //*[@id="Create"] 
+${NAME}                                    Graexol            
+${PLANET}                                  Xil    
+${POPULATION}                              77000000      
+${NEWPOPULATION}                           32000000      
+${ATTITUDE}                                Objective     
+${LISTNAME}                                //*[@id=Graexolid]/td[1]
+${LISTPLANET}                              //*[@id=Xil]/td[2]
+${LISTPOPULATION}                          //*[@id=77000000]/td[3]
+${LISTATTITUDE}                            //*[@id=Objective]/td[4]
+${LISTEDIT}                                xpath=(//a[contains(text(),'Edit')])[5]
+${LISTDELETE}                              xpath=(//a[contains(text(),'Delete')])[4]
+${EDITNAME}                                //*[@id="Name"] 
+${EDITPLANET}                              //*[@id="Planet"] 
+${EDITPOPULATION}                          //*[@id="Population"] 
+${EDITATTITUDE}                            //*[@id="Attitude"] 
+${EDITSAVE}                                //*[@id="Save"] 
+${EDITBACKTOLIST}                          //*[@id="BackToList"] 
+${DELETEDELETE}                            //*[@id="Delete"] 
+${LOGIN}                                   id=Login 
+${LOGINEMAIL}                              id=Input_Email 
+${EMAIL}                                   gslvzsiyuaqyhkbthq@bvhrk.com
+${LOGINPASSWORD}                           id=Input_Password 
+${PASSWORD}                                Almafa12:
+${LOGINBUTTON}                             id=login-submit 
+${LOGOUTBUTTON}                            //*[@id="Logout"]/button[1] 
+${HELLO}                                   //*[@id="Hello"] 
+${HELLO_EMAIL}                             Hello gslvzsiyuaqyhkbthq@bvhrk.com!
+
+
+*** Test Cases ***
+Alien
+    Open Webpage
+    Welcome Check
+    Headers Check
+    Login
+    Aliens Create
+    Alien Check
+    Alien Edit
+    Check Again with new Population
+    Delete Alien
+    Logout
+
+*** Keywords ***
+Open Webpage
+    Open Browser    ${URL}    ${BROWSER}
+    Maximize Browser Window
+Welcome Check 
+    Should Contain    ${WELCOMETEXT}    ${Welcome}
+Headers Check
+    Wait Until Element Is Visible    ${ALIENS}
+    Should Contain    ${ALIENS}    ${ALIENS_NAME}
+    Click Element    ${ALIENS}
+    Sleep    1s
+    Should Contain    ${ALIENSTEXT}    ${ALIENS_ALIENS_NAME}
+    Should Contain    ${HOME}    ${HOME_NAME}
+    Click Element    ${HOME}
+    Sleep    1s
+    Should Contain    ${WELCOMETEXT}    ${Welcome}
+    Should Contain    ${PRIVACY}    ${PRIVACY_NAME}
+    Click Element    ${PRIVACY}
+    Sleep    1s
+    Should Contain    ${PRIVACYTEXT}    ${PRIVACYTEXT_NAME}
+Login 
+    Wait Until Element Is Visible    ${LOGIN}
+    Click Element    ${LOGIN}
+    Wait Until Element Is Visible    ${LOGINEMAIL}    
+    Click Element    ${LOGINEMAIL}
+    Input Text    ${LOGINEMAIL}    ${EMAIL}    True
+    Sleep    1s
+    Wait Until Element Is Visible    ${LOGINPASSWORD}
+    Click Element    ${LOGINPASSWORD}
+    Input Text    ${LOGINPASSWORD}    ${PASSWORD}
+    Wait Until Element Is Visible    ${LOGINBUTTON}
+    Click Element    ${LOGINBUTTON}
+    Page Should Contain    ${HELLO_EMAIL}
+Aliens Create
+    Wait Until Element Is Visible    ${ALIENS}
+    Click Element    ${ALIENS}
+    Wait Until Element Is Visible    ${CREATENEW}
+    Click Element    ${CREATENEW}
+    Wait Until Element Is Visible    ${CREATENAME}
+    Click Element    ${CREATENAME}
+    Input Text    ${CREATENAME}    ${NAME}
+    Sleep    1s
+
+    Wait Until Element Is Visible    ${CREATEPLANET}
+    Click Element    ${CREATEPLANET}
+    Input Text    ${CREATEPLANET}    ${PLANET}
+    Sleep    1s
+
+    Wait Until Element Is Visible    ${CREATEPOPULATION}
+    Click Element    ${CREATEPOPULATION}
+    Input Text    ${CREATEPOPULATION}    ${POPULATION}
+    Sleep    1s
+
+    Wait Until Element Is Visible    ${CREATEATTITUDE}
+    Click Element    ${CREATEATTITUDE}
+    Input Text    ${CREATEATTITUDE}    ${ATTITUDE}
+    Sleep    1s
+Alien Check
+    Wait Until Element Is Visible  ${CREATECREATE}  
+    Click Element    ${CREATECREATE}    
+    Should Contain    ${LISTNAME}    ${NAME}
+    Should Contain    ${LISTPLANET}    ${PLANET}
+    Should Contain    ${LISTPOPULATION}    ${POPULATION}
+    Should Contain    ${LISTATTITUDE}    ${ATTITUDE}
+Alien Edit
+    Wait Until Element Is Visible    ${LISTEDIT}
+    Click Element    ${LISTEDIT}
+    Wait Until Element Is Visible    ${EDITPOPULATION}
+    Click Element    ${EDITPOPULATION}
+    Sleep    1s
+    Input Text    ${EDITPOPULATION}    ${NEWPOPULATION}
+    Sleep    1s
+    Wait Until Element Is Visible    ${EDITSAVE}
+    Click Element    ${EDITSAVE}
+Check Again with new Population    
+    Should Contain    ${LISTNAME}    ${NAME}
+    Should Contain    ${LISTPLANET}    ${PLANET}
+    # Should Contain    ${LISTPOPULATION}    ${NEWPOPULATION}
+    Should Contain    ${LISTATTITUDE}    ${ATTITUDE}
+Delete Alien
+    Wait Until Element Is Visible    ${LISTDELETE}
+    Click Element    ${LISTDELETE}
+    Sleep    1s
+    Wait Until Element Is Visible    ${DELETEDELETE}
+    Click Element    ${DELETEDELETE}
+    Sleep    1s
+Logout
+    Wait Until Element Is Visible    ${LOGOUTBUTTON}
+    Click Element    ${LOGOUTBUTTON}
+    Sleep    1s
+    Close Browser
+
+    
