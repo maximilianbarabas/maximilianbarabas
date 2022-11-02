@@ -1,0 +1,26 @@
+<!--Maximilian Barabas-->
+<div class="container">
+  <h1>{{title}}</h1>
+  <!--területszámítás
+  alap*magasság/2-->
+  <div class="triagleform">
+    <div class="mb-3">
+      <label for="base" class="form-label">alap</label>
+      <input type="text" id="base" [(ngModel)]="base"
+      class="form-control">
+    </div>
+    <div class="mb-3">
+      <label for="height" class="form-label">Magasság</label>
+      <input type="text" id="height" [(ngModel)]="height"
+      class="form-control" required>
+    </div>
+    <button (click)="calcArea()" class="btn btn-info">
+      Számít
+    </button>
+    <div class="mb-3" *ngIf="areaShow">
+      <label for="area" class="form-label">Terület</label>
+      <input type="text" id="area" [(ngModel)]="area"
+      class="form-control" disabled>
+    </div>
+  </div>
+</div>
