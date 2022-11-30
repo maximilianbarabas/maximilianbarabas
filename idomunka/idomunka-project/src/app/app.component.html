@@ -1,0 +1,54 @@
+<!--
+* File: app.component.html
+* Author: Barabas Maximilian
+* Copyright: 2022
+* Group: Szoft_II_N
+* Date: 2022-11-30
+* Github: https://github.com/maximilianbarabas
+* Licenc: GNU GPL
+-->
+
+  <div class="container text-center">
+    
+    <h1>idomunka</h1>
+    
+      <div class="border bg-light rounded px-3 py-4">
+        <div class="row mb-2">
+          <label class="col">Megmunkált hossz</label>
+
+          <input
+            type="text"
+            class="form-control col"
+            [(ngModel)]="length">
+        </div>
+
+        <div class="row mb-2">
+          <label class="col">Fordulatonkénti előtolás</label>
+          <input
+            type="text"
+            class="form-control col"
+            [(ngModel)]="lengthfreq">
+        </div>
+
+        <div class="row mb-2">
+          <label class="col">Főorsó fordulatszám</label>
+          <input
+            type="text"
+            class="form-control col"
+            [(ngModel)]="freq">
+        </div>
+
+        <div class="w-50 mb-2 ms-auto me-0">
+          <button class="btn btn-info w-100"
+          (click)="calcTime()">Számítás</button>
+        </div>
+
+      <div class="row">
+        <label class="col">Megmunkálási idő</label>
+        <input type="text" class="form-control col"
+        [(ngModel)]="time">
+      </div>
+
+    </div>
+    <i>| Barabas Maximilián | Szoft_II_N | 2022.11.30 |</i>
+  </div>

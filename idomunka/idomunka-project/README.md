@@ -1,0 +1,2 @@
+# Idomunka számítás
+
