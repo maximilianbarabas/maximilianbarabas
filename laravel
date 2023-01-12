@@ -1,0 +1,144 @@
+
+Project inditás composer create-project laravel/laravel sarkanyok
+
+
+composer global require laravel/installer
+
+
+
+table készítés
+php artisan make:migration create_name_table
+
+
+
+model create
+
+php artisan make:model color  
+
+
+resource állomány készités
+
+php artisan make:resource Dragon
+
+php artisan make:controller AuthController
+
+php artisan make:controller BlogController
+
+
+
+Route meghívás
+Route::post("/register", [AuthController::class, "signUp" ]);
+Route::post('/signin', [AuthController::class, "signin" ]);
+
+Fent meghívás
+use App\Http\Controllers\AuthController;
+
+// Meghivás
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use \App\Http\Controllers\BaseController as BaseController;
+use Illuminate\Support\Facades\Auth;
+use Validator;
+use App\Models\User;
+
+class AuthController extends BaseController {
+
+//Bejelentkezes
+
+    public function signIn (Request $request) {
+
+        if ( Auth::attempt ([ "email" => $request->email, "password" => $request->password ])) {
+            
+            $authUser = Auth::user();
+            $success [ "token" ] = $authUser->createToken ( "MyAuthApp" ) ->plainTextToken;
+            $success [" name "] = $authUser-> name;
+
+            // return $this ->sendResponse ($success, "Sikeres bejelentkezés");
+
+        }else {
+            
+          //  return $this->sendError ( "Unathorized.". [ "error" => "Hibás adatok"]);
+        }
+    }
+
+//Regisztráció
+
+    public function signUp (Request $request) {
+        $validator = Validator::make($request->all(), [
+            "name" => "required",
+            "email" => "required",
+            "password" => "required",
+            "confirm_password" => "required|same:passwrod",
+        ]);
+    
+        if ( $validator ->fails()) {
+            // return sendError ("Error validation", $validator->errors() );
+
+            print_r ("Hiba a belépés sikertelen");
+        }
+    
+        $input = $request->all();
+        $input["password"]=bcrypt($input["password"]);
+        $user = User::create($input);
+        $success["name"] = $user->name;
+    
+        // return $this ->sendResponse ($success, "Sikeres regisztráicó");
+    }
+}
+
+
+INSOMNIA
+
+http://127.0.0.1:8000/api/signin
+
+{
+	"email": "b@cs.com",
+	"password": "titok"
+}
+
+http://127.0.0.1:8000/api/signin
+
+{
+	"name": "Maximilian",
+	"email": "b@cs.com",
+	"password": "titok",
+	"confirm_password": "titok"
+}
+
+
+Route::post('/logout', [AuthController::class, "logout"]);
+
+BASECONTROLL
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class BaseController extends Controller
+{
+    public function sendResponse ($result, $message) {
+
+        $response = [
+            "success" => true,
+            "data" => $result,
+            "message" => $message
+        ];
+        return response()->json ($response, 200 );
+    }
+    public function sendError( $error, $errorMessage = [], $code = 404 ) {
+
+        $response = [
+
+            "success" => false, 
+            "message" => $error
+        ];
+
+        if( !empty( errorMessage)) {
+
+            $response ["data"] = $errorMessage;
+            
+        }
+        return response()->json
+}
